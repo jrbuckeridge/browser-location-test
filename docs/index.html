@@ -6,6 +6,7 @@
 
   <script>
     function geoFindMe() {
+      var startTime = Date.now();
       var output = document.getElementById("out");
 
       if (!navigator.geolocation){
@@ -15,7 +16,7 @@
           var latitude = position.coords.latitude;
           var longitude = position.coords.longitude;
 
-          output.innerHTML = '<p>Latitude is ' + latitude + ' <br>Longitude is ' + longitude + '</p>';
+          output.innerHTML = '<p>Latitude is ' + latitude + '<br>Longitude is ' + longitude + '<br>Time: ' + (Date.now() - startTime)/1000 + ' seconds</p>';
 
           var img = new Image();
 //          img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=13&size=300x300&sensor=false";
@@ -23,13 +24,17 @@
           output.appendChild(img);
         }
 
-        function error() {
-          output.innerHTML = "Unable to retrieve your location";
+        function error(e) {
+          output.innerHTML = "<p>Unable to retrieve your location.</p><p>Code: " + e.code + ", Message: " + e.message + "</p>";
         }
 
         output.innerHTML = "<p>Locating…</p>";
 //        navigator.geolocation.getCurrentPosition(success, error);
-        navigator.geolocation.watchPosition(success, error);
+        var options = {
+          enableHighAccuracy: true,
+          maximumAge: Infinity
+        };
+        navigator.geolocation.watchPosition(success, error, options);
       }
     }
   </script>
