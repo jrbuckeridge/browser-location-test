@@ -8,9 +8,10 @@
     function geoFindMe() {
       var startTime = Date.now();
       var output = document.getElementById("out");
+      var times = 0;
 
       if (!navigator.geolocation){
-        output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+        output.innerHTML = '<p>Geolocation is not supported by your browser</p>';
       } else {
         function success(position) {
           var latitude = position.coords.latitude;
@@ -19,22 +20,32 @@
           output.innerHTML = '<p>Latitude is ' + latitude + '<br>Longitude is ' + longitude + '<br>Time: ' + (Date.now() - startTime)/1000 + ' seconds</p>';
 
           var img = new Image();
-//          img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=13&size=300x300&sensor=false";
-          img.src = "http://staticmap.openstreetmap.de/staticmap.php?center=" + latitude + "," + longitude + "&zoom=13&size=512x512";
+//          img.src = 'https://maps.googleapis.com/maps/api/staticmap?center=' + latitude + ',' + longitude + '&zoom=13&size=300x300&sensor=false';
+          img.src = 'http://staticmap.openstreetmap.de/staticmap.php?center=' + latitude + ',' + longitude + '&zoom=13&size=512x512';
           output.appendChild(img);
         }
 
         function error(e) {
-          output.innerHTML = "<p>Unable to retrieve your location.</p><p>Code: " + e.code + ", Message: " + e.message + "</p>";
+          output.innerHTML = '<p>Unable to retrieve your location.</p><p>Code: ' + e.code + ', Message: ' + e.message + '</p>';
+          if (e.code === e.POSITION_UNAVAILABLE || e.code === e.TIMEOUT) {
+            times++;
+            output.innerHTML += '<p>Retrying... (' + times + ')</p>';
+            getCurrentPosition();
+          }
         }
 
-        output.innerHTML = "<p>Locating…</p>";
-//        navigator.geolocation.getCurrentPosition(success, error);
+        output.innerHTML = '<p>Locating…</p>';
         var options = {
           enableHighAccuracy: false,
-          maximumAge: Infinity
+          maximumAge: Infinity,
+          timeout: 10000
         };
-        navigator.geolocation.watchPosition(success, error, options);
+
+        function getCurrentPosition() {
+          navigator.geolocation.getCurrentPosition(success, error, options);
+        }
+
+        getCurrentPosition();
       }
     }
   </script>
