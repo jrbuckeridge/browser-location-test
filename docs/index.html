@@ -31,7 +31,7 @@
         output.innerHTML = "<p>Locating…</p>";
 //        navigator.geolocation.getCurrentPosition(success, error);
         var options = {
-          enableHighAccuracy: true,
+          enableHighAccuracy: false,
           maximumAge: Infinity
         };
         navigator.geolocation.watchPosition(success, error, options);
